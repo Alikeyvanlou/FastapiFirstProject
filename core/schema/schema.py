@@ -1,17 +1,17 @@
 from pydantic import BaseModel, Field
 
-class Cast(BaseModel):
+class Cost(BaseModel):
     description: str = Field(min_length=2, max_length=50)
     amount: float = Field(gt=0.1)
 
-class CastCreate(Cast):
+class CostCreate(Cost):
     pass
 
-class CastResponse(Cast):
+class CostResponse(Cost):
     id: int
 
-class CastUpdate(Cast):
+class CostUpdate(Cost):
     pass
 
-class CastDeleteResponse(BaseModel):
+class CostDeleteResponse(BaseModel):
     message: str

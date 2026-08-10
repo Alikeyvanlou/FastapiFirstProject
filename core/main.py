@@ -1,5 +1,5 @@
 from fastapi import FastAPI, status, HTTPException, Query, Path
-from schema.schema import CastCreate, CastResponse, CastUpdate, CastDeleteResponse
+from schema.schema import CostCreate, CostResponse, CostUpdate, CostDeleteResponse
 from typing import List
 
 app = FastAPI()
@@ -13,7 +13,7 @@ data = {
     6: {'id': 6, 'description': 'restaurant', 'amount': 60.0}
 }
 
-@app.get('/cast', status_code=status.HTTP_200_OK, response_model=List[CastResponse])
+@app.get('/cost', status_code=status.HTTP_200_OK, response_model=List[CostResponse])
 def root(search: str | None = Query(default=None), min_amount: float | None = Query(default=None), max_amount: float | None = Query(default=None)):
     result = list(data.values())
     if search:
@@ -24,29 +24,29 @@ def root(search: str | None = Query(default=None), min_amount: float | None = Qu
         result = [c for c in result if c['amount'] <= max_amount]
     return result
 
-@app.post('/cast', status_code=status.HTTP_201_CREATED, response_model=CastResponse)
-def create_cast(item: CastCreate):
+@app.post('/cost', status_code=status.HTTP_201_CREATED, response_model=CostResponse)
+def create_cost(item: CostCreate):
     new_id = max((item for item in data), default=0) + 1
-    new_cast = {'id': new_id, 'description': item.description, 'amount': item.amount}
-    data[new_id]= new_cast
-    return new_cast
+    new_cost = {'id': new_id, 'description': item.description, 'amount': item.amount}
+    data[new_id]= new_cost
+    return new_cost
 
-@app.get('/cast/{cast_id}', status_code=status.HTTP_200_OK, response_model=CastResponse)
-def read_cast(cast_id: int = Path(ge=1)):
-    if cast_id in data:
-        return data[cast_id]
-    raise HTTPException(detail='cast not found', status_code=status.HTTP_404_NOT_FOUND)
+@app.get('/cost/{cost_id}', status_code=status.HTTP_200_OK, response_model=CostResponse)
+def read_cost(cost_id: int = Path(ge=1)):
+    if cost_id in data:
+        return data[cost_id]
+    raise HTTPException(detail='cost not found', status_code=status.HTTP_404_NOT_FOUND)
 
-@app.put('/cast/{cast_id}', status_code=status.HTTP_200_OK, response_model=CastResponse)
-def edit_cast(item: CastUpdate, cast_id: int = Path(ge=1)):
-    if cast_id in data:
-        data[cast_id] = {'id': cast_id, 'description': item.description, 'amount' : item.amount}
-        return data[cast_id]
-    raise HTTPException(detail='cast not found', status_code=status.HTTP_404_NOT_FOUND)
+@app.put('/cost/{cost_id}', status_code=status.HTTP_200_OK, response_model=CostResponse)
+def edit_cost(item: CostUpdate, cost_id: int = Path(ge=1)):
+    if cost_id in data:
+        data[cost_id] = {'id': cost_id, 'description': item.description, 'amount' : item.amount}
+        return data[cost_id]
+    raise HTTPException(detail='cost not found', status_code=status.HTTP_404_NOT_FOUND)
 
-@app.delete('/cast/{cast_id}', status_code=status.HTTP_200_OK, response_model=CastDeleteResponse)
-def delete_cast(cast_id: int = Path(ge=1)):
-    if cast_id in data:
-        data.pop(cast_id)
+@app.delete('/cost/{cost_id}', status_code=status.HTTP_200_OK, response_model=CostDeleteResponse)
+def delete_cost(cost_id: int = Path(ge=1)):
+    if cost_id in data:
+        data.pop(cost_id)
         return {'message': 'The cost was successfully removed.'}
-    raise HTTPException(detail='cast not found', status_code=status.HTTP_404_NOT_FOUND)
+    raise HTTPException(detail='cost not found', status_code=status.HTTP_404_NOT_FOUND)
