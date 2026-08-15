@@ -10,5 +10,3 @@ class Cost(Base):
     id = Column(Integer, primary_key = True)
     description = Column(String)
     amount = Column(Float)
-
-Base.metadata.create_all(engine)
