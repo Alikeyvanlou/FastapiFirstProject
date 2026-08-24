@@ -20,7 +20,7 @@ class RegisterUserSchema(BaseModel):
             raise ValueError("password not match!")
         return self
 
-class EditUserSchema(RegisterUserSchema):
+class EditUserSchema(BaseModel):
     username: str = Field(..., min_length = 3)
     email: EmailStr
     password: str = Field(..., min_length = 6)
@@ -31,7 +31,8 @@ class RemoveUserSchema(BaseModel):
 
 class UserResponseSchema(BaseModel):
 
+    id: int
     username: str
     email: EmailStr
-    cost: list[CostResponseSchema]
+    costs: list[CostResponseSchema]
     model_config = ConfigDict(from_attributes=True)

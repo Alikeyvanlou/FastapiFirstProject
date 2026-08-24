@@ -10,4 +10,4 @@ class CostModel(Base):
     create_at = Column(String)
     update_at = Column(String, default = None)
     user_id = Column(Integer, ForeignKey("users.id"))
-    user = relationship("User", back_populates="costs")
+    user = relationship("UserModel", back_populates="costs")

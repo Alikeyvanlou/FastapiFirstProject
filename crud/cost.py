@@ -7,15 +7,15 @@ from datetime import datetime
 
 def get_cost(db: Session, search: str):
     query = Select(CostModel)
-    if not search:
+    if search:
         query = Select(CostModel).where(CostModel.title == search)
     return db.scalars(query).all()
 
 def get_cost_by_id(db: Session, cost_id: int):
     query = Select(CostModel).where(CostModel.id == cost_id)
-    if query == None:
-        raise HTTPException(detail="cost not found", status_code=status.HTTP_404_NOT_FOUND)
     cost = db.scalar(query)
+    if cost == None:
+        raise HTTPException(detail="cost not found", status_code=status.HTTP_404_NOT_FOUND)
     return cost
 
 def create_cost(item: CostCreateSchema, db: Session):
@@ -27,7 +27,8 @@ def create_cost(item: CostCreateSchema, db: Session):
     return new_cost
 
 def edit_cost(cost_id: int, item: CostUpdateSchema, db: Session):
-    cost = Select(CostModel).where(CostModel.id == cost_id)
+    query = Select(CostModel).where(CostModel.id == cost_id)
+    cost = db.scalar(query)
     if cost == None:
         raise HTTPException(detail="cost not found", status_code=status.HTTP_404_NOT_FOUND)
     cost.title = item.title
@@ -38,7 +39,8 @@ def edit_cost(cost_id: int, item: CostUpdateSchema, db: Session):
     return cost
 
 def delete_cost(cost_id: int, db: Session):
-    cost = Select(CostModel).where(CostModel.id == cost_id)
+    query = Select(CostModel).where(CostModel.id == cost_id)
+    cost = db.scalar(query)
     if cost == None:
         raise HTTPException(detail="cost not found", status_code=status.HTTP_404_NOT_FOUND)
     db.delete(cost)

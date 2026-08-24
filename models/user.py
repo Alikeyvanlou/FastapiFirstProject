@@ -8,4 +8,4 @@ class UserModel(Base):
     username = Column(String)
     email = Column(String)
     password = Column(String)
-    costs = relationship("Cost", back_populates="user")
+    costs = relationship("CostModel", back_populates="user")
