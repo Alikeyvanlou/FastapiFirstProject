@@ -19,6 +19,7 @@ from database.db import Base
 
 from models.user import UserModel
 from models.cost import CostModel
+from models.refresh_token import RefreshTokenModel
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel

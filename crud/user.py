@@ -3,7 +3,13 @@ from sqlalchemy import Select
 from models.user import UserModel
 from fastapi import HTTPException, status
 from schemas.user import RegisterUserSchema, EditUserSchema
-from datetime import datetime
+from fastapi.security import OAuth2PasswordRequestForm
+from core.auth import verifying_pws, create_access_token, create_refresh_token
+from datetime import timedelta
+from core.auth import hashing_pws
+from fastapi import Response
+from models.refresh_token import RefreshTokenModel
+
 
 def get_user(db: Session, search: str):
     users = Select(UserModel)
@@ -12,41 +18,65 @@ def get_user(db: Session, search: str):
     res = db.scalars(users).all()
     return res
 
-def get_user_by_id(db: Session, user_id: int):
-    query = Select(UserModel).where(UserModel.id == user_id)
-    if db.scalar(query) == None:
-        raise HTTPException(detail="user not found", status_code=status.HTTP_404_NOT_FOUND)
-    user = db.scalar(query)
+def get_user_info(user: UserModel):
     return user
 
 def create_user(item: RegisterUserSchema, db: Session):
-    email = Select(UserModel).where(UserModel.email == item.email)
-    print(db.scalar(email))
-    if db.scalar(email) != None:
-        raise HTTPException(detail=f"{item.email} register before", status_code=status.HTTP_400_BAD_REQUEST)
-    new_user = UserModel(username = item.username, email = item.email, password =  item.password)               
+    existing_user = db.scalar(
+        Select(UserModel).where(
+            (UserModel.email == item.email) | (UserModel.username == item.username)
+        )
+    )
+    if existing_user is not None:
+        raise HTTPException(detail="Email or username already registered", status_code=status.HTTP_400_BAD_REQUEST)
+
+    new_user = UserModel(username=item.username, email=item.email, password=hashing_pws(item.password))
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     return new_user
 
-def edit_user(user_id: int, item: EditUserSchema, db: Session):
-    query = Select(UserModel).where(UserModel.id == user_id)
-    user = db.scalar(query)
-    if user == None:
-        raise HTTPException(detail="user not found", status_code=status.HTTP_404_NOT_FOUND)
-    user.username = item.username
-    user.email = item.email
-    user.password = item.password
+def edit_user(item: EditUserSchema, db: Session, user: UserModel):
+    if item.username is not None:
+        user.username = item.username
+    if item.email is not None:
+        user.email = item.email
+    if item.password is not None:
+        user.password = hashing_pws(item.password)
     db.commit()
     db.refresh(user)
     return user
 
-def delete_user(user_id: int, db: Session):
-    query = Select(UserModel).where(UserModel.id == user_id)
-    user = db.scalar(query)
-    if user == None:
-        raise HTTPException(detail="user not found", status_code=status.HTTP_404_NOT_FOUND)
+def delete_user(db: Session, user: UserModel):
     db.delete(user)
     db.commit()
     return {"message" : "user sccessfully removed."}
+
+def user_login(response: Response, db: Session, form: OAuth2PasswordRequestForm):
+    query = Select(UserModel).where(UserModel.username == form.username)
+    user = db.scalar(query)
+    if user == None:
+        raise HTTPException(detail="username or password is incorrect.", status_code=status.HTTP_403_FORBIDDEN)
+    if not verifying_pws(form.password ,user.password):
+        raise HTTPException(detail="username or password is incorrect.", status_code=status.HTTP_403_FORBIDDEN)
+    payload = {"sub" : user.username}
+    access_token = create_access_token(payload)
+    refresh_token = create_refresh_token(response=response, payload=payload, expires_delta=timedelta(hours= 24 * 7), user_id=user.id)
+    db.add(refresh_token)
+    db.commit()
+    db.refresh(refresh_token)
+    return {"access_token": access_token, "token_type" : "bearer"}
+
+def user_refresh(db: Session, response: Response, old_token: RefreshTokenModel):
+    user = db.scalar(Select(UserModel).where(UserModel.id == old_token.user_id))
+    payload = {"sub" : user.username}
+    new_refresh_token = create_refresh_token(response=response, payload=payload, 
+                                     expires_delta=timedelta(hours= 24 * 7), user_id=user.id
+                                    )
+    new_access_token = create_access_token(payload=payload)
+    db.add(new_refresh_token)
+    db.delete(old_token)
+    db.commit()
+    db.refresh(new_refresh_token)
+    return {"access_token": new_access_token, "token_type" : "bearer"}
+    

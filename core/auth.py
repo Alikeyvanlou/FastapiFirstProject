@@ -1,0 +1,46 @@
+import jwt
+from pwdlib import PasswordHash
+from datetime import timedelta, datetime , timezone
+from core.config import settings
+from uuid import uuid4
+from models.refresh_token import RefreshTokenModel
+from fastapi import Response
+
+password_hash = PasswordHash.recommended()
+
+def hashing_pws(password: str) -> str:
+
+    return password_hash.hash(password)
+
+def verifying_pws(password: str, hash_password: str) -> bool:
+    return password_hash.verify(password, hash_password)
+
+def create_access_token(payload: dict, expires_delta: timedelta | None = None) -> str:
+    to_encode = payload.copy()
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+    to_encode.update({"exp": expire, "type" : "access"})
+    token = jwt.encode(to_encode, settings.secret_key, algorithm = settings.algorithm)
+    return token
+
+
+def create_refresh_token(response: Response, payload: dict, expires_delta: timedelta, user_id: int):
+    to_encode = payload.copy()
+    expire = datetime.now(timezone.utc) + expires_delta
+    jti = str(uuid4())
+    to_encode.update({"exp": expire, "type" : "refresh", "jti": jti})
+    token = jwt.encode(to_encode, settings.secret_key, algorithm = settings.algorithm)
+
+    new_refresh_token = RefreshTokenModel(
+        jti = jti,
+        expires_at = expire,
+        created_at = datetime.now(timezone.utc),
+        user_id = user_id
+    )
+
+    response.set_cookie(key="refresh_token", value=token, httponly=True, secure=True)
+    return new_refresh_token
+
+
