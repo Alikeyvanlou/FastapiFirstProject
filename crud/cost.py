@@ -5,6 +5,7 @@ from models.user import UserModel
 from fastapi import HTTPException, status
 from schemas.cost import CostCreateSchema, CostUpdateSchema
 from datetime import datetime
+from i18n import translate
 
 def get_cost(db: Session, search: str, user: UserModel):
     query = Select(CostModel).where(CostModel.user_id == user.id)
@@ -12,11 +13,11 @@ def get_cost(db: Session, search: str, user: UserModel):
         query = Select(CostModel).where(CostModel.title == search, CostModel.user_id == user.id)
     return db.scalars(query).all()
 
-def get_cost_by_id(db: Session, cost_id: int, user: UserModel):
+def get_cost_by_id(db: Session, cost_id: int, user: UserModel, lang: str):
     query = Select(CostModel).where(CostModel.id == cost_id, CostModel.user_id == user.id)
     cost = db.scalar(query)
     if cost == None:
-        raise HTTPException(detail="cost not found", status_code=status.HTTP_404_NOT_FOUND)
+        raise HTTPException(detail=translate("cost_not_found", lang), status_code=status.HTTP_404_NOT_FOUND)
     return cost
 
 def create_cost(item: CostCreateSchema, db: Session, user: UserModel):
@@ -28,11 +29,11 @@ def create_cost(item: CostCreateSchema, db: Session, user: UserModel):
     db.refresh(new_cost)
     return new_cost
 
-def edit_cost(cost_title: int, item: CostUpdateSchema, db: Session, user: UserModel):
+def edit_cost(cost_title: int, item: CostUpdateSchema, db: Session, user: UserModel, lang: str):
     query = Select(CostModel).where(CostModel.user_id == user.id, CostModel.title == cost_title)
     cost = db.scalar(query)
     if cost == None:
-        raise HTTPException(detail="cost not found", status_code=status.HTTP_404_NOT_FOUND)
+        raise HTTPException(detail=translate("cost_not_found", lang), status_code=status.HTTP_404_NOT_FOUND)
     cost.title = item.title
     cost.amount = item.amount
     cost.update_at = datetime.now().strftime('%a %d %b %Y, %I:%M%p')
@@ -40,11 +41,11 @@ def edit_cost(cost_title: int, item: CostUpdateSchema, db: Session, user: UserMo
     db.refresh(cost)
     return cost
 
-def delete_cost(cost_title: str, db: Session, user: UserModel):
+def delete_cost(cost_title: str, db: Session, user: UserModel, lang: str):
     query = Select(CostModel).where(CostModel.user_id == user.id, CostModel.title == cost_title)
     cost = db.scalar(query)
     if cost == None:
-        raise HTTPException(detail="cost not found", status_code=status.HTTP_404_NOT_FOUND)
+        raise HTTPException(detail=translate("cost_not_found", lang), status_code=status.HTTP_404_NOT_FOUND)
     db.delete(cost)
     db.commit()
-    return {"message" : "cost sccessfully removed."}
+    return {"message" : translate("cost_removed", lang)}

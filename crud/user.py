@@ -9,7 +9,7 @@ from datetime import timedelta
 from core.auth import hashing_pws
 from fastapi import Response
 from models.refresh_token import RefreshTokenModel
-
+from i18n import translate
 
 def get_user(db: Session, search: str):
     users = Select(UserModel)
@@ -21,14 +21,14 @@ def get_user(db: Session, search: str):
 def get_user_info(user: UserModel):
     return user
 
-def create_user(item: RegisterUserSchema, db: Session):
+def create_user(item: RegisterUserSchema, db: Session, lang: str):
     existing_user = db.scalar(
         Select(UserModel).where(
             (UserModel.email == item.email) | (UserModel.username == item.username)
         )
     )
     if existing_user is not None:
-        raise HTTPException(detail="Email or username already registered", status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(detail=translate("email_or_username_exist", lang), status_code=status.HTTP_400_BAD_REQUEST)
 
     new_user = UserModel(username=item.username, email=item.email, password=hashing_pws(item.password))
     db.add(new_user)
@@ -47,18 +47,18 @@ def edit_user(item: EditUserSchema, db: Session, user: UserModel):
     db.refresh(user)
     return user
 
-def delete_user(db: Session, user: UserModel):
+def delete_user(db: Session, user: UserModel, lang: str):
     db.delete(user)
     db.commit()
-    return {"message" : "user sccessfully removed."}
+    return {"message" : translate("delete_user", lang)}
 
-def user_login(response: Response, db: Session, form: OAuth2PasswordRequestForm):
+def user_login(response: Response, db: Session, form: OAuth2PasswordRequestForm, lang: str):
     query = Select(UserModel).where(UserModel.username == form.username)
     user = db.scalar(query)
     if user == None:
-        raise HTTPException(detail="username or password is incorrect.", status_code=status.HTTP_403_FORBIDDEN)
+        raise HTTPException(detail=translate("wrong_pass_or_username", lang), status_code=status.HTTP_403_FORBIDDEN)
     if not verifying_pws(form.password ,user.password):
-        raise HTTPException(detail="username or password is incorrect.", status_code=status.HTTP_403_FORBIDDEN)
+        raise HTTPException(detail=translate("wrong_pass_or_username", lang), status_code=status.HTTP_403_FORBIDDEN)
     payload = {"sub" : user.username}
     access_token = create_access_token(payload)
     refresh_token = create_refresh_token(response=response, payload=payload, expires_delta=timedelta(hours= 24 * 7), user_id=user.id)

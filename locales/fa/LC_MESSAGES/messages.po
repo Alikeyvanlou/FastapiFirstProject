@@ -1,0 +1,19 @@
+msgid ""
+msgstr ""
+"Content-Type : text/plain; charset=UTF-8\n"
+"Language: fa\n"
+
+msgid "cost_not_found"
+msgstr "هزینه یافت نشد"
+
+msgid "cost_removed"
+msgstr "هزینه با موفقیت پاک شد."
+
+msgid "email_or_username_exist"
+msgstr "ایمیل یا نام‌کاربری قبلا ثبت شده است."
+
+msgid "delete_user"
+msgstr "اکانت با موفقیت پاک شد."
+
+msgid "wrong_pass_or_username"
+msgstr "نام‌کاربری یا رمز عبور نادرست است."

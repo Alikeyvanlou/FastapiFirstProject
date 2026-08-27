@@ -1,6 +1,6 @@
 from database.db import SessionLocal
 from fastapi.security import OAuth2PasswordBearer
-from fastapi import Depends, HTTPException, status, Response, Request
+from fastapi import Depends, HTTPException, status, Request, Query
 import jwt
 from core.config import settings
 from jwt.exceptions import InvalidTokenError
@@ -74,3 +74,6 @@ def verify_refresh_token(request: Request, db: Session = Depends(get_db)):
         raise credentials_exception
 
     return refresh_token
+
+def get_lang(lang: str = Query(default="en")) -> str:
+    return lang

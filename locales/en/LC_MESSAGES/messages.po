@@ -1,0 +1,19 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: en\n"
+
+msgid "cost_not_found"
+msgstr "cost not found"
+
+msgid "cost_removed"
+msgstr "cost successfully removed."
+
+msgid "email_or_username_exist"
+msgstr "Email or username already registered."
+
+msgid "delete_user"
+msgstr "user successfully removed."
+
+msgid "wrong_pass_or_username"
+msgstr "username or password is incorrect."
