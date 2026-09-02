@@ -40,7 +40,9 @@ ignore = [
     "ANN102",
     "B008",
     "S101",
-    "E501"
+    "E501",
+    "N806",
+    "S105"
 ]
 
 [tool.ruff.lint.flake8-bugbear]

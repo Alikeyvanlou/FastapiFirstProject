@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from fastapi import HTTPException, status
 from sqlalchemy import Select
 from sqlalchemy.orm import Session
 
+from core.exception import CostNotFoundError
 from models.cost import CostModel
 from models.user import UserModel
 from schemas.cost import CostCreateSchema, CostUpdateSchema
@@ -20,7 +20,7 @@ def get_cost_by_id(db: Session, cost_id: int, user: UserModel):
     query = Select(CostModel).where(CostModel.id == cost_id, CostModel.user_id == user.id)
     cost = db.scalar(query)
     if cost is None:
-        raise HTTPException(detail="cost not found", status_code=status.HTTP_404_NOT_FOUND)
+        raise CostNotFoundError(cost_id=cost_id)
     return cost
 
 
@@ -37,11 +37,11 @@ def create_cost(item: CostCreateSchema, db: Session, user: UserModel):
     return new_cost
 
 
-def edit_cost(cost_title: int, item: CostUpdateSchema, db: Session, user: UserModel):
-    query = Select(CostModel).where(CostModel.user_id == user.id, CostModel.title == cost_title)
+def edit_cost(cost_id: int, item: CostUpdateSchema, db: Session, user: UserModel):
+    query = Select(CostModel).where(CostModel.user_id == user.id, CostModel.id == cost_id)
     cost = db.scalar(query)
     if cost is None:
-        raise HTTPException(detail="cost not found", status_code=status.HTTP_404_NOT_FOUND)
+        raise CostNotFoundError(cost_id=cost_id)
     cost.title = item.title
     cost.amount = item.amount
     cost.update_at = datetime.now().strftime("%a %d %b %Y, %I:%M%p")
@@ -50,11 +50,11 @@ def edit_cost(cost_title: int, item: CostUpdateSchema, db: Session, user: UserMo
     return cost
 
 
-def delete_cost(cost_title: str, db: Session, user: UserModel):
-    query = Select(CostModel).where(CostModel.user_id == user.id, CostModel.title == cost_title)
+def delete_cost(cost_id: int, db: Session, user: UserModel):
+    query = Select(CostModel).where(CostModel.user_id == user.id, CostModel.id == cost_id)
     cost = db.scalar(query)
     if cost is None:
-        raise HTTPException(detail="cost not found", status_code=status.HTTP_404_NOT_FOUND)
+        raise CostNotFoundError(cost_id=cost_id)
     db.delete(cost)
     db.commit()
     return {"message": "cost sccessfully removed."}

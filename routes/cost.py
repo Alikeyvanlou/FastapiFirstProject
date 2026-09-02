@@ -34,18 +34,18 @@ def create_cost_route(
     return create_cost(item, db, user)
 
 
-@route.put("/{cost_title}", status_code=status.HTTP_200_OK, response_model=CostResponseSchema)
+@route.put("/{cost_id}", status_code=status.HTTP_200_OK, response_model=CostResponseSchema)
 def edit_cost_route(
-    cost_title: str,
+    cost_id: int,
     item: CostUpdateSchema,
     db: Session = Depends(get_db),
     user: UserModel = Depends(get_current_user),
 ):
-    return edit_cost(cost_title, item, db, user)
+    return edit_cost(cost_id, item, db, user)
 
 
-@route.delete("/{cost_title}", status_code=status.HTTP_204_NO_CONTENT)
+@route.delete("/{cost_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_cost_route(
-    cost_title: str, db: Session = Depends(get_db), user: UserModel = Depends(get_current_user)
+    cost_id: int, db: Session = Depends(get_db), user: UserModel = Depends(get_current_user)
 ):
-    return delete_cost(cost_title, db, user)
+    return delete_cost(cost_id, db, user)

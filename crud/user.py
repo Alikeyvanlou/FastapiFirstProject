@@ -24,16 +24,17 @@ def get_user_info(user: UserModel):
 
 
 def create_user(item: RegisterUserSchema, db: Session):
-    existing_user = db.scalar(
-        Select(UserModel).where(
-            (UserModel.email == item.email) | (UserModel.username == item.username)
-        )
-    )
-    if existing_user is not None:
+    existing_username = db.scalar(Select(UserModel).where(UserModel.username == item.username))
+    if existing_username is not None:
         raise HTTPException(
-            detail="Email or username already registered", status_code=status.HTTP_400_BAD_REQUEST
+            detail="The username already exists.", status_code=status.HTTP_400_BAD_REQUEST
         )
 
+    existing_email = db.scalar(Select(UserModel).where(UserModel.email == item.email))
+    if existing_email is not None:
+        raise HTTPException(
+            detail="The email already registered.", status_code=status.HTTP_400_BAD_REQUEST
+        )
     new_user = UserModel(
         username=item.username, email=item.email, password=hashing_pws(item.password)
     )

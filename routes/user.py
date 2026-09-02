@@ -25,12 +25,12 @@ def get_user_route(search: str | None = None, db: Session = Depends(get_db)):
     return get_user(db, search)
 
 
-@route.get("/", status_code=status.HTTP_200_OK, response_model=UserResponseSchema)
+@route.get("/me", status_code=status.HTTP_200_OK, response_model=UserResponseSchema)
 def get_user_info_route(user: UserModel = Depends(get_current_user)):
     return get_user_info(user)
 
 
-@route.post("/", status_code=status.HTTP_201_CREATED, response_model=UserResponseSchema)
+@route.post("/register", status_code=status.HTTP_201_CREATED, response_model=UserResponseSchema)
 def create_user_route(item: RegisterUserSchema, db: Session = Depends(get_db)):
     return create_user(item, db)
 
@@ -47,7 +47,7 @@ def delete_user_route(db: Session = Depends(get_db), user: UserModel = Depends(g
     return delete_user(db, user)
 
 
-@route.post("/", status_code=status.HTTP_200_OK, response_model=TokenResponseModel)
+@route.post("/login", status_code=status.HTTP_200_OK, response_model=TokenResponseModel)
 def user_login_route(
     response: Response, db: Session = Depends(get_db), item: OAuth2PasswordRequestForm = Depends()
 ):
