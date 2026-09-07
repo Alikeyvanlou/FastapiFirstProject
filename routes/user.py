@@ -17,15 +17,19 @@ from models.user import UserModel
 from schemas.token import TokenResponseModel
 from schemas.user import EditUserSchema, RegisterUserSchema, UserResponseSchema
 
+from fastapi_cache.decorator import cache
+from fastapi_cache import FastAPICache
+
 route = APIRouter(prefix="/users")
 
-
 @route.get("/", status_code=status.HTTP_200_OK, response_model=list[UserResponseSchema])
+@cache(60)
 def get_user_route(search: str | None = None, db: Session = Depends(get_db)):
     return get_user(db, search)
 
 
 @route.get("/me", status_code=status.HTTP_200_OK, response_model=UserResponseSchema)
+@cache(60 * 3)
 def get_user_info_route(user: UserModel = Depends(get_current_user)):
     return get_user_info(user)
 
@@ -43,7 +47,8 @@ def edit_user_route(
 
 
 @route.delete("/", status_code=status.HTTP_204_NO_CONTENT)
-def delete_user_route(db: Session = Depends(get_db), user: UserModel = Depends(get_current_user)):
+async def delete_user_route(db: Session = Depends(get_db), user: UserModel = Depends(get_current_user)):
+    await FastAPICache.clear(namespace="get_user_info_route")
     return delete_user(db, user)
 
 

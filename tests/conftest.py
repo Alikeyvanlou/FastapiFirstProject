@@ -1,3 +1,6 @@
+import os
+os.environ["TESTING"] = "true"
+
 from datetime import datetime
 
 import pytest
@@ -39,7 +42,8 @@ def client(db):
             pass
 
     app.dependency_overrides[get_db] = override_get_db
-    yield TestClient(app, base_url="https://testserver")
+    with TestClient(app, base_url="https://testserver") as client:
+        yield client
     app.dependency_overrides.clear()
 
 
