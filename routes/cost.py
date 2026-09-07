@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Depends, status
+from fastapi_cache import FastAPICache
+from fastapi_cache.decorator import cache
 from sqlalchemy.orm import Session
 
 from crud.cost import create_cost, delete_cost, edit_cost, get_cost, get_cost_by_id
@@ -6,10 +8,8 @@ from dependencies.dependencies import get_current_user, get_db
 from models.user import UserModel
 from schemas.cost import CostCreateSchema, CostResponseSchema, CostUpdateSchema
 
-from fastapi_cache.decorator import cache
-from fastapi_cache import FastAPICache
-
 route = APIRouter(prefix="/costs")
+
 
 @route.get("/", status_code=status.HTTP_200_OK, response_model=list[CostResponseSchema])
 @cache(60)
@@ -19,6 +19,7 @@ def get_cost_route(
     user: UserModel = Depends(get_current_user),
 ):
     return get_cost(db, search, user)
+
 
 @route.get("/{cost_id}", status_code=status.HTTP_200_OK, response_model=CostResponseSchema)
 @cache(60)

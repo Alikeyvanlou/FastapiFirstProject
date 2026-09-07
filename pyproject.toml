@@ -16,6 +16,9 @@ exclude = [
     "dist",
     "migration",
     "*.egg-info",
+    "docker-compose.yml",
+    "Dokerfile",
+    ".dockerignore"
 ]
 
 [tool.ruff.lint]

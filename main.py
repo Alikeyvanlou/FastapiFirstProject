@@ -1,10 +1,12 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
-from starlette.exceptions import HTTPException
-from contextlib import asynccontextmanager
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from redis import asyncio as aioredis
+from starlette.exceptions import HTTPException
+
 from core.config import settings
 from core.exception import (
     CostNotFoundError,
@@ -15,19 +17,21 @@ from core.exception import (
 from routes.cost import route as route_cost
 from routes.user import route as route_user
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     if settings.TESTING:
         import fakeredis.aioredis
+
         redis = fakeredis.aioredis.FakeRedis()
     else:
         redis = aioredis.from_url(settings.REDIS_URL)
-    FastAPICache.init(RedisBackend(redis),prefix="fastapi_cache")
+    FastAPICache.init(RedisBackend(redis), prefix="fastapi_cache")
     yield
     await redis.close()
     if not settings.TESTING:
         await redis.connection_pool.disconnect()
-                      
+
 
 app = FastAPI(lifespan=lifespan)
 
