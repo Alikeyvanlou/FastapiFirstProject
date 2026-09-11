@@ -11,5 +11,5 @@ class CostModel(Base):
     amount = Column(Float)
     create_at = Column(String)
     update_at = Column(String, default=None)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     user = relationship("UserModel", back_populates="costs")

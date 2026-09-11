@@ -44,6 +44,16 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+  locust:
+    build: ./locust
+    ports:
+      - "8089:8089"
+    volumes:
+      - ./locust:/mnt/locust
+    depends_on:
+      - fastapi
+      - postgres
+    command: -f /mnt/locust/locustfile.py --host=http://fastapi:8000
 
 volumes:
   postgres_data:

@@ -9,12 +9,12 @@ class UserBaseSchema(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=6)
 
-
 class RegisterUserSchema(BaseModel):
     username: str = Field(..., min_length=3)
     email: EmailStr
     password: str = Field(..., min_length=6)
     password_repeat: str = Field(..., min_length=6)
+    is_fake: bool = False
 
     @model_validator(mode="after")
     def password_confirm(self):

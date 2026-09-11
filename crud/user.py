@@ -20,6 +20,8 @@ def get_user(db: Session, search: str):
 
 
 def get_user_info(user: UserModel):
+    print("USER:", user)
+    print("COSTS:", user.costs)
     return user
 
 
