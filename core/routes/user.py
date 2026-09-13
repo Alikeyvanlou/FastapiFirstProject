@@ -4,7 +4,7 @@ from fastapi_cache import FastAPICache
 from fastapi_cache.decorator import cache
 from sqlalchemy.orm import Session
 
-from crud.user import (
+from core.crud.user import (
     create_user,
     delete_user,
     edit_user,
@@ -13,11 +13,11 @@ from crud.user import (
     user_login,
     user_refresh,
 )
-from dependencies.dependencies import get_current_user, get_db, verify_refresh_token
-from models.refresh_token import RefreshTokenModel
-from models.user import UserModel
-from schemas.token import TokenResponseModel
-from schemas.user import EditUserSchema, RegisterUserSchema, UserResponseSchema
+from core.dependencies.dependencies import get_current_user, get_db, verify_refresh_token
+from core.models.refresh_token import RefreshTokenModel
+from core.models.user import UserModel
+from core.schemas.token import TokenResponseModel
+from core.schemas.user import EditUserSchema, RegisterUserSchema, UserResponseSchema
 
 route = APIRouter(prefix="/users")
 

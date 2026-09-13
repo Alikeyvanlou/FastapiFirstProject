@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
 
-from schemas.cost import CostResponseSchema
+from core.schemas.cost import CostResponseSchema
 
 
 class UserBaseSchema(BaseModel):

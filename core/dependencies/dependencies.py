@@ -8,9 +8,9 @@ from sqlalchemy import Select
 from sqlalchemy.orm import Session
 
 from core.config import settings
-from database.db import SessionLocal
-from models.refresh_token import RefreshTokenModel
-from models.user import UserModel
+from core.database.db import SessionLocal
+from core.models.refresh_token import RefreshTokenModel
+from core.models.user import UserModel
 
 
 def get_db():

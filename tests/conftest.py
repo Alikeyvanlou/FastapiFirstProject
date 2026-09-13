@@ -10,9 +10,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from database.db import Base
-from dependencies.dependencies import get_db
-from main import app
+from core.database.db import Base
+from core.dependencies.dependencies import get_db
+from core.main import app
 
 
 @pytest.fixture(scope="session")

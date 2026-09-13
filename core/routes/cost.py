@@ -3,10 +3,10 @@ from fastapi_cache import FastAPICache
 from fastapi_cache.decorator import cache
 from sqlalchemy.orm import Session
 
-from crud.cost import create_cost, delete_cost, edit_cost, get_cost, get_cost_by_id
-from dependencies.dependencies import get_current_user, get_db
-from models.user import UserModel
-from schemas.cost import CostCreateSchema, CostResponseSchema, CostUpdateSchema
+from core.crud.cost import create_cost, delete_cost, edit_cost, get_cost, get_cost_by_id
+from core.dependencies.dependencies import get_current_user, get_db
+from core.models.user import UserModel
+from core.schemas.cost import CostCreateSchema, CostResponseSchema, CostUpdateSchema
 
 route = APIRouter(prefix="/costs")
 

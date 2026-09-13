@@ -6,7 +6,7 @@ from fastapi import Response
 from pwdlib import PasswordHash
 
 from core.config import settings
-from models.refresh_token import RefreshTokenModel
+from core.models.refresh_token import RefreshTokenModel
 
 password_hash = PasswordHash.recommended()
 

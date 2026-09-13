@@ -6,9 +6,9 @@ from sqlalchemy import Select
 from sqlalchemy.orm import Session
 
 from core.auth import create_access_token, create_refresh_token, hashing_pws, verifying_pws
-from models.refresh_token import RefreshTokenModel
-from models.user import UserModel
-from schemas.user import EditUserSchema, RegisterUserSchema
+from core.models.refresh_token import RefreshTokenModel
+from core.models.user import UserModel
+from core.schemas.user import EditUserSchema, RegisterUserSchema
 
 
 def get_user(db: Session, search: str):

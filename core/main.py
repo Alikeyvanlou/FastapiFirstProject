@@ -14,8 +14,8 @@ from core.exception import (
     http_exception_handler,
     validation_exception_handler,
 )
-from routes.cost import route as route_cost
-from routes.user import route as route_user
+from core.routes.cost import route as route_cost
+from core.routes.user import route as route_user
 
 
 @asynccontextmanager

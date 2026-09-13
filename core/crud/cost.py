@@ -4,9 +4,9 @@ from sqlalchemy import Select
 from sqlalchemy.orm import Session
 
 from core.exception import CostNotFoundError
-from models.cost import CostModel
-from models.user import UserModel
-from schemas.cost import CostCreateSchema, CostUpdateSchema
+from core.models.cost import CostModel
+from core.models.user import UserModel
+from core.schemas.cost import CostCreateSchema, CostUpdateSchema
 
 
 def get_cost(db: Session, search: str, user: UserModel):
