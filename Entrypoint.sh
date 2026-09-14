@@ -1,9 +1,8 @@
 #!/bin/bash
 set -e
- 
-echo "Running database migrations..."
+
+echo "Running database migration ... "
 alembic upgrade head
- 
-echo "Starting application..."
+
+echo "Starting Application ..."
 exec "$@"
- 
