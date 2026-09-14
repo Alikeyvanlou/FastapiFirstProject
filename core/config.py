@@ -7,6 +7,6 @@ class Settings(BaseSettings):
     ALGORITHM: str
     REDIS_URL: str
     TESTING: bool = False
-
+    SENTRY: str
 
 settings = Settings()
