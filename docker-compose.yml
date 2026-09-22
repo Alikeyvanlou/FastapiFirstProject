@@ -1,6 +1,8 @@
 services:
   fastapi:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.staging
     container_name: fastapi_app
     ports:
       - "8000:8000"
